@@ -73,31 +73,26 @@ def register(user_data: UserCreate, db: Session = Depends(get_db), token: str = 
 # ============================================================
 @router.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    try:
-        user = authenticate_user(db, form_data.username, form_data.password)
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect email or password",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = create_access_token(
-            data={"sub": user.email, "role": user.role, "user_id": user.id},
-            expires_delta=access_token_expires
+    user = authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
         )
-        return {
-            "access_token": access_token, 
-            "token_type": "bearer",
-            "user_id": user.id, 
-            "name": user.name, 
-            "role": user.role, 
-            "is_admin": (user.role == "admin")
-        }
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=400, detail=f"BACKEND TRAP: {str(e)} | Type: {type(e).__name__}")
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email, "role": user.role, "user_id": user.id},
+        expires_delta=access_token_expires
+    )
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "user_id": user.id, 
+        "name": user.name, 
+        "role": user.role, 
+        "is_admin": (user.role == "admin")
+    }
 
 
 # ============================================================
