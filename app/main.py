@@ -9,7 +9,7 @@ app = FastAPI(title="AI Project Manager")
 # ============================================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # Frontend origins
+    allow_origins=["*"],  # Frontend origins (Allow all for production)
     allow_credentials=True,
     allow_methods=["*"],  # Sabhi methods (GET, POST, PUT, DELETE, OPTIONS)
     allow_headers=["*"],  # Sabhi headers (Authorization, Content-Type)
