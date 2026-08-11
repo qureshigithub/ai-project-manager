@@ -1,0 +1,21 @@
+# Python
+venv/
+env/
+__pycache__/
+*.pyc
+.env
+
+# Node
+node_modules/
+dist/
+build/
+npm-debug.log
+
+# Database
+*.db
+*.sqlite3
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
