@@ -9,3 +9,6 @@ python-multipart
 bcrypt
 psycopg2-binary
 email-validator
+langchain-groq
+langchain-core
+langgraph
