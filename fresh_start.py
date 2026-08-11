@@ -6,7 +6,6 @@ from passlib.context import CryptContext
 
 sys.path.append(str(Path(__file__).parent))
 from app.models.user import User
-from app.db.base import Base
 
 # Neon Database URL
 URL = "postgresql://neondb_owner:npg_X9eYRiDMol3F@ep-rough-block-axhy5of0.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require"
@@ -24,11 +23,13 @@ def fresh_start():
         print("✅ Database bilkul saaf (Fresh) ho gayi hai!")
 
         print("👤 Naya Admin banaya ja raha hai...")
-        hashed_pw = pwd_context.hash("admin123")
+        new_email = "superadmin@ezitech.com"
+        new_password = "SuperPassword123"
+        hashed_pw = pwd_context.hash(new_password)
         
         new_admin = User(
-            name="Admin",
-            email="admin@ezitech.com",
+            name="Super Admin",
+            email=new_email,
             password=hashed_pw,
             role="admin",
             is_admin=True
@@ -36,7 +37,7 @@ def fresh_start():
         
         db.add(new_admin)
         db.commit()
-        print("✅ Naya Admin 'admin@ezitech.com' (Password: admin123) successfully ban gaya!")
+        print(f"✅ Naya Admin '{new_email}' (Password: {new_password}) successfully ban gaya!")
     except Exception as e:
         print(f"❌ Error: {e}")
     finally:
