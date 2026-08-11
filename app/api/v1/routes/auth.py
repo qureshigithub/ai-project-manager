@@ -73,38 +73,26 @@ def register(user_data: UserCreate, db: Session = Depends(get_db), token: str = 
 # ============================================================
 @router.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    try:
-        user = db.query(User).filter(User.email == form_data.username).first()
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        
-        try:
-            is_valid = verify_password(form_data.password, user.password)
-        except Exception as ve:
-            raise HTTPException(
-                status_code=400, 
-                detail=f"BCRYPT CRASH: {str(ve)} | Plain len: {len(form_data.password)} | Hash len: {len(user.password) if user.password else 0} | Plain[:10]: {form_data.password[:10]}"
-            )
-            
-        if not is_valid:
-            raise HTTPException(status_code=401, detail="Incorrect email or password")
-        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = create_access_token(
-            data={"sub": user.email, "role": user.role, "user_id": user.id},
-            expires_delta=access_token_expires
+    user = authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
         )
-        return {
-            "access_token": access_token, 
-            "token_type": "bearer",
-            "user_id": user.id, 
-            "name": user.name, 
-            "role": user.role, 
-            "is_admin": (user.role == "admin")
-        }
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=400, detail=f"BACKEND CRASH: {str(e)} | Type: {type(e).__name__}")
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email, "role": user.role, "user_id": user.id},
+        expires_delta=access_token_expires
+    )
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "user_id": user.id, 
+        "name": user.name, 
+        "role": user.role, 
+        "is_admin": (user.role == "admin")
+    }
 
 
 # ============================================================
