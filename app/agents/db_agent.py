@@ -2,7 +2,6 @@ from app.agents.base_agent import BaseAgent
 from app.db.session import SessionLocal
 from app.services import project_service, task_service, user_service
 from app.core.config import settings
-from app.models.user import User
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, SystemMessage
 
