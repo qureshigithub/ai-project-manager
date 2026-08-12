@@ -1,4 +1,8 @@
 import sys
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -24,7 +28,10 @@ def fresh_start():
         print("✅ Database bilkul saaf (Fresh) ho gayi hai!")
 
         print("👤 Naya Admin banaya ja raha hai...")
-        hashed_pw = pwd_context.hash("admin123")
+        admin_password = os.getenv("ADMIN_PASSWORD")
+        if not admin_password:
+            raise ValueError("ADMIN_PASSWORD is not set in .env")
+        hashed_pw = pwd_context.hash(admin_password)
         
         new_admin = User(
             name="Admin",
@@ -36,7 +43,7 @@ def fresh_start():
         
         db.add(new_admin)
         db.commit()
-        print("✅ Naya Admin 'admin@ezitech.com' (Password: admin123) successfully ban gaya!")
+        print(f"✅ Naya Admin 'admin@ezitech.com' (Password: {admin_password}) successfully ban gaya!")
     except Exception as e:
         print(f"❌ Error: {e}")
     finally:

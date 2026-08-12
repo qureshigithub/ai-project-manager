@@ -1,5 +1,8 @@
 import os
 import sys
+from dotenv import load_dotenv
+
+load_dotenv()
 from pathlib import Path
 import bcrypt
 from sqlalchemy import create_engine
@@ -20,13 +23,18 @@ def create_admin():
         if existing_user:
             print(f"⚠️ Admin '{email}' pehle se maujood hai!")
             # Update password just in case
-            hashed_pw = bcrypt.hashpw("admin123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            admin_password = os.getenv("ADMIN_PASSWORD")
+            if not admin_password:
+                raise ValueError("ADMIN_PASSWORD is not set in .env")
+            hashed_pw = bcrypt.hashpw(admin_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             existing_user.password = hashed_pw
             db.commit()
             print("Password reset to admin123")
             return
 
-        password = "admin123"
+        password = os.getenv("ADMIN_PASSWORD")
+        if not password:
+            raise ValueError("ADMIN_PASSWORD is not set in .env")
         hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
         new_admin = User(

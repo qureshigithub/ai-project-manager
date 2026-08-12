@@ -1,5 +1,9 @@
 import sqlite3
 import bcrypt
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def update_admin_password():
     try:
@@ -7,7 +11,9 @@ def update_admin_password():
         cursor = conn.cursor()
         
         email = "admin@ezitech.com"
-        new_password = "admin123"
+        new_password = os.getenv("ADMIN_PASSWORD")
+        if not new_password:
+            raise ValueError("ADMIN_PASSWORD is not set in .env file")
         
         # Naya password hash karein
         hashed_pw = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')

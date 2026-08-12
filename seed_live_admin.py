@@ -1,5 +1,8 @@
 import sys
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 from pathlib import Path
 import bcrypt
 
@@ -19,7 +22,9 @@ def create_admin():
             print(f"⚠️ Admin '{email}' pehle se maujood hai!")
             return
 
-        password = "admin123"
+        password = os.getenv("ADMIN_PASSWORD")
+        if not password:
+            raise ValueError("ADMIN_PASSWORD is not set in .env")
         hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
         new_admin = User(

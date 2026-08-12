@@ -1,5 +1,9 @@
 import sqlite3
 import bcrypt
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ✅ Terminal root par hai, isliye direct file ka naam likhna theek hai
 DB_NAME = "ai_project.db"
@@ -14,7 +18,9 @@ def create_admin():
         role = "admin"
 
         # ✅ YAHAN APNA PASSWORD DAAL DEIN (Jo login karte waqt use karna hai)
-        password = "admin123"
+        password = os.getenv("ADMIN_PASSWORD")
+        if not password:
+            raise ValueError("ADMIN_PASSWORD is not set in .env file")
 
         hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
