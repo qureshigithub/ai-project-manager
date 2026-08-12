@@ -1430,6 +1430,7 @@ function AdminDashboard() {
                           <MenuItem value="risk">🔍 Risk Analysis</MenuItem>
                           <MenuItem value="planning">📅 Sprint Planning</MenuItem>
                           <MenuItem value="db">🗄️ Database Query</MenuItem>
+                          <MenuItem value="rag">📄 Document AI</MenuItem>
                         </Select>
                       </FormControl>
 
