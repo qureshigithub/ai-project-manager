@@ -16,6 +16,5 @@ langchain-community
 langchain-text-splitters
 langgraph
 faiss-cpu
-sentence-transformers
 PyPDF2
 tiktoken

@@ -1,16 +1,24 @@
 import os
 from langchain_community.document_loaders import DirectoryLoader, TextLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from langchain_community.vectorstores import FAISS
+from app.core.config import settings
 
 DOCS_DIR = os.path.join(os.path.dirname(__file__), "../../data/docs")
 FAISS_INDEX_DIR = os.path.join(os.path.dirname(__file__), "../../data/faiss_index")
 
 class RagService:
     def __init__(self):
-        # Default embedding model (runs locally, free, good for general tasks)
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        # Cloud API embedding model (No local PyTorch download required)
+        hf_token = settings.HF_TOKEN
+        if not hf_token:
+            raise ValueError("HF_TOKEN is not set in environment or .env file.")
+            
+        self.embeddings = HuggingFaceInferenceAPIEmbeddings(
+            api_key=hf_token, 
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
+        )
         self.vector_store = None
 
         if os.path.exists(FAISS_INDEX_DIR) and os.path.exists(os.path.join(FAISS_INDEX_DIR, "index.faiss")):
