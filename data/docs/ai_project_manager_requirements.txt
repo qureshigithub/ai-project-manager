@@ -1,0 +1,30 @@
+# Product Requirements Document (PRD)
+Project Name: AI Project Manager
+Version: 1.0
+
+## 1. Overview
+The AI Project Manager is an intelligent system designed to automate project management tasks, provide insights into databases, analyze risks, and answer questions based on internal project documentation.
+
+## 2. Architecture
+- Frontend: React (TypeScript) dashboard for interacting with the AI.
+- Backend: FastAPI (Python) server to handle routing and business logic.
+- Agent Orchestration: LangGraph is used to route queries to specialized agents.
+- Database: SQLite for local development, Neon (PostgreSQL) for live production.
+
+## 3. Agents
+The system consists of several specialized agents:
+- **Planning Agent**: Helps create sprints, track goals, and break down complex tasks.
+- **Risk Agent**: Analyzes requirements and alerts the team about potential delays, security issues, or blockers.
+- **Database Agent (DB Agent)**: Queries the SQL database directly to provide real-time stats on users and tasks.
+- **RAG Agent**: Reads internal PDFs and TXT files to answer documentation-related questions using FAISS vector storage.
+
+## 4. Security & Authentication
+- All users must log in using Email and Password.
+- Passwords are hashed using bcrypt.
+- JWT (JSON Web Tokens) are used for secure session management.
+- Hardcoded secrets and passwords are strictly prohibited; all secrets are loaded via .env file.
+- The Admin's default email is admin@ezitech.com.
+
+## 5. Deployment
+- The backend is deployed using Uvicorn.
+- The frontend will be hosted on Vercel.

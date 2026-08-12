@@ -2,11 +2,13 @@ from typing import TypedDict
 from app.agents.risk_agent import RiskAgent
 from app.agents.planning_agent import PlanningAgent
 from app.agents.db_agent import DatabaseQueryAgent
+from app.agents.rag_agent import RagAgent
 from langgraph.graph import StateGraph, END
 
 risk_agent = RiskAgent()
 planning_agent = PlanningAgent()
 db_agent = DatabaseQueryAgent()
+rag_agent = RagAgent()
 
 class AgentState(TypedDict):
     query: str
@@ -28,12 +30,16 @@ def supervisor_node(state: AgentState) -> AgentState:
         state["next"] = "planning_agent"
     elif forced_agent == "db":
         state["next"] = "db_agent"
+    elif forced_agent == "rag":
+        state["next"] = "rag_agent"
     else:
         # 2. No forced agent → route based on query keywords (fallback)
         if "risk" in query or "alert" in query or "danger" in query:
             state["next"] = "risk_agent"
         elif "plan" in query or "sprint" in query or "goal" in query:
             state["next"] = "planning_agent"
+        elif "document" in query or "doc" in query or "wiki" in query or "requirement" in query or "pdf" in query:
+            state["next"] = "rag_agent"
         else:
             state["next"] = "db_agent"
     
@@ -60,12 +66,20 @@ def db_node(state: AgentState) -> AgentState:
     state["next"] = "END"
     return state
 
+def rag_node(state: AgentState) -> AgentState:
+    response = rag_agent.run({"query": state["query"], "context": state["context"]})
+    state["result"] = response["result"]
+    state["data"] = response.get("data", {})
+    state["next"] = "END"
+    return state
+
 def build_graph():
     workflow = StateGraph(AgentState)
     workflow.add_node("supervisor", supervisor_node)
     workflow.add_node("risk_agent", risk_node)
     workflow.add_node("planning_agent", planning_node)
     workflow.add_node("db_agent", db_node)
+    workflow.add_node("rag_agent", rag_node)
     workflow.set_entry_point("supervisor")
     
     workflow.add_conditional_edges(
@@ -74,13 +88,15 @@ def build_graph():
         {
             "risk_agent": "risk_agent",
             "planning_agent": "planning_agent",
-            "db_agent": "db_agent"
+            "db_agent": "db_agent",
+            "rag_agent": "rag_agent"
         }
     )
     
     workflow.add_edge("risk_agent", END)
     workflow.add_edge("planning_agent", END)
     workflow.add_edge("db_agent", END)
+    workflow.add_edge("rag_agent", END)
     
     return workflow.compile()
 

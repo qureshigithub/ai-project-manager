@@ -9,6 +9,13 @@ python-multipart
 bcrypt
 psycopg2-binary
 email-validator
+langchain
 langchain-groq
 langchain-core
+langchain-community
+langchain-text-splitters
 langgraph
+faiss-cpu
+sentence-transformers
+PyPDF2
+tiktoken

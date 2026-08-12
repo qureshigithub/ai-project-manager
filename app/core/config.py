@@ -4,6 +4,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "AI Project Manager"
     DATABASE_URL: str = "sqlite:///./ai_project.db"
     GROQ_API_KEY: str = ""  # <--- Yeh line add karo
+    ADMIN_PASSWORD: str = ""
 
     class Config:
         env_file = ".env"
